@@ -58,34 +58,18 @@
     text-transform: uppercase; color: var(--dim); margin: 0;
   }
 
-  /* ---------- Floating pill nav ---------- */
-  .nav {
-    position: fixed; top: 18px; left: 50%; transform: translateX(-50%);
-    z-index: 100; display: flex; align-items: center; gap: 4px;
-    padding: 7px 8px 7px 16px;
-    background: rgba(32,28,58,.72); backdrop-filter: blur(14px);
-    border: 1px solid var(--line-2); border-radius: 999px;
-    box-shadow: 0 10px 40px -12px rgba(0,0,0,.7);
-    max-width: calc(100vw - 32px);
+  /* ---------- Hero brand mark (top-left) ---------- */
+  .hero-brand { position: absolute; top: 30px; left: var(--edge); z-index: 5; display: flex; align-items: center; gap: 10px; }
+  .hero-brand .plate {
+    font-family: var(--font-mono); font-weight: 600; font-size: 12px; letter-spacing: .1em;
+    color: #1a1735; background: #E9E3B4; border-radius: 5px; padding: 4px 8px 3px;
   }
-  .nav .brand { display: flex; align-items: center; gap: 9px; padding-right: 8px; }
-  .nav .plate {
-    font-family: var(--font-mono); font-weight: 600; font-size: 11px; letter-spacing: .1em;
-    color: #1a1735; background: #E9E3B4; border-radius: 4px; padding: 3px 6px 2px;
-  }
-  .nav .brand-name { font-family: var(--font-display); font-weight: 600; font-size: 15px; }
-  .nav .links { display: flex; gap: 2px; }
-  .nav a.link {
-    font-size: 13px; color: var(--steel); padding: 7px 13px; border-radius: 999px;
-    transition: color .2s, background .2s; white-space: nowrap;
-  }
-  .nav a.link:hover { color: var(--ink); background: rgba(255,255,255,.05); }
-  @media (max-width: 720px) { .nav .links { display: none; } }
+  .hero-brand .brand-name { font-family: var(--font-display); font-weight: 600; font-size: 17px; }
 
   /* ---------- Hero ---------- */
   .hero {
     position: relative; min-height: 100svh; display: flex; align-items: center;
-    padding: 140px 0 90px; overflow: hidden;
+    padding: 40px 0 70px; overflow: hidden;
   }
   .hero::before {
     content: ""; position: absolute; inset: 0; pointer-events: none;
@@ -280,18 +264,8 @@
 </head>
 <body>
 
-<nav class="nav">
-  <span class="brand"><span class="plate">PL8</span><span class="brand-name">Plates</span></span>
-  <span class="links">
-    <a class="link" href="#problem">The problem</a>
-    <a class="link" href="#how">How it works</a>
-    <a class="link" href="#features">Features</a>
-    <a class="link" href="#trust">Trust</a>
-    <a class="link" href="#status">Status</a>
-  </span>
-</nav>
-
 <header class="hero">
+  <div class="hero-brand"><span class="plate">PL8</span><span class="brand-name">Plates</span></div>
   <div class="wrap">
     <p class="eyebrow">A trust-first car marketplace · launching in Lithuania</p>
     <h1>Cars you can <em>actually</em> trust.</h1>
