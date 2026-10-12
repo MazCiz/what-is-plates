@@ -276,6 +276,92 @@
   .shot figcaption h3 { font-family: var(--font-display); font-size: 1.18rem; letter-spacing: -.01em; }
   .shot figcaption p { margin-top: 7px; color: var(--steel); font-size: .95rem; line-height: 1.55; max-width: 48ch; }
   @media (max-width: 760px) { .shots { column-count: 1; } .shot-wide .browser, .shot-wide figcaption { max-width: none; } }
+
+  /* ---------- What we inspect (interactive hotspots) ---------- */
+  .inspect { --cat-mech: var(--verify); --cat-body: #d9b36a; --cat-road: #e89b96; --cat-obd: #9a8ef0; }
+  .inspect-stage { position: relative; max-width: 960px; margin: 0 auto; }
+  .inspect-stage::before {
+    content: ""; position: absolute; left: 10%; right: 10%; bottom: 7%; height: 46px; z-index: 0;
+    background: radial-gradient(60% 100% at 50% 50%, rgba(78,201,164,.22), transparent 72%); filter: blur(10px);
+  }
+  .inspect-car { position: relative; z-index: 1; width: 100%; filter: drop-shadow(0 42px 52px rgba(0,0,0,.55)); }
+  .inspect-car img { display: block; width: 100%; height: auto; }
+  .hint { text-align: center; margin-top: 18px; font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
+
+  .hotspots { position: absolute; inset: 0; z-index: 3; }
+  .hs {
+    position: absolute; transform: translate(-50%, -50%);
+    width: 28px; height: 28px; padding: 0; margin: 0; border: 0; background: none; cursor: pointer;
+    color: var(--cat-mech); -webkit-tap-highlight-color: transparent;
+  }
+  .hs.mech { color: var(--cat-mech); } .hs.body { color: var(--cat-body); }
+  .hs.road { color: var(--cat-road); } .hs.obd { color: var(--cat-obd); }
+  .hs .pin { position: absolute; inset: 0; display: grid; place-items: center; }
+  .hs .pin::before {
+    content: ""; position: absolute; width: 28px; height: 28px; border-radius: 50%;
+    border: 1.5px solid currentColor; opacity: .55; animation: hsPulse 2.6s ease-out infinite;
+  }
+  .hs .pin::after {
+    content: ""; width: 12px; height: 12px; border-radius: 50%; background: currentColor;
+    box-shadow: 0 0 0 4px color-mix(in srgb, currentColor 20%, transparent), 0 0 14px -1px currentColor;
+    transition: transform .2s;
+  }
+  @keyframes hsPulse { 0% { transform: scale(.55); opacity: .7; } 100% { transform: scale(1.7); opacity: 0; } }
+  .hs:hover, .hs.open { z-index: 8; }
+  .hs:hover .pin::after, .hs.open .pin::after { transform: scale(1.18); }
+  .hs:focus-visible { outline: 2px solid currentColor; outline-offset: 5px; border-radius: 50%; }
+  .hotspots.linked .hs { opacity: .22; }
+  .hotspots.linked .hs.on { opacity: 1; }
+  .hotspots.linked .hs.on .pin::after { transform: scale(1.22); }
+  .hs { transition: opacity .22s; }
+
+  .hs-tip {
+    position: absolute; left: 50%; translate: -50% 0; bottom: calc(100% + 15px);
+    width: max-content; max-width: 236px; text-align: left;
+    background: var(--panel-2); border: 1px solid var(--line-2); border-radius: 13px;
+    padding: 12px 15px; box-shadow: 0 22px 44px -18px rgba(0,0,0,.72);
+    opacity: 0; visibility: hidden; transition: opacity .18s ease, visibility .18s; pointer-events: none;
+  }
+  .hs:hover .hs-tip, .hs:focus-within .hs-tip, .hs.open .hs-tip { opacity: 1; visibility: visible; }
+  .hs-tip .cat { font-family: var(--font-mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: currentColor; }
+  .hs-tip h4 { font-family: var(--font-display); font-weight: 600; font-size: .98rem; color: var(--ink); margin: 6px 0 5px; line-height: 1.18; }
+  .hs-tip p { font-size: .82rem; line-height: 1.46; color: var(--steel); }
+  .hs-tip::after { content: ""; position: absolute; top: 100%; left: 50%; translate: -50% 0; border: 6px solid transparent; border-top-color: var(--line-2); }
+  /* vertical flip */
+  .hs.tip-down .hs-tip { bottom: auto; top: calc(100% + 15px); }
+  .hs.tip-down .hs-tip::after { top: auto; bottom: 100%; border-top-color: transparent; border-bottom-color: var(--line-2); }
+  /* horizontal anchoring for edge pins */
+  .hs.tip-start .hs-tip { left: 50%; translate: -26px 0; }
+  .hs.tip-start .hs-tip::after { left: 26px; }
+  .hs.tip-end .hs-tip { left: auto; right: 50%; translate: 26px 0; }
+  .hs.tip-end .hs-tip::after { left: auto; right: 26px; }
+
+  /* category cards */
+  .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: clamp(44px, 6vw, 68px); }
+  .cat-card {
+    position: relative; overflow: hidden; background: var(--panel); border: 1px solid var(--line);
+    border-radius: 18px; padding: 28px 24px; display: flex; flex-direction: column; gap: 13px;
+    transition: transform .28s cubic-bezier(.2,.7,.3,1), border-color .28s, background .28s;
+  }
+  .cat-card::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--c); opacity: .9; }
+  .cat-card:hover { transform: translateY(-5px); border-color: color-mix(in srgb, var(--c) 42%, var(--line-2)); background: var(--panel-2); }
+  .cat-card .icon { width: 46px; height: 46px; border-radius: 13px; display: grid; place-items: center; background: var(--cbg); color: var(--c); flex: none; }
+  .cat-card .icon svg { width: 22px; height: 22px; }
+  .cat-card h3 { font-size: 1.16rem; }
+  .cat-card p { color: var(--steel); font-size: .95rem; }
+  .cat-mech { --c: var(--cat-mech); --cbg: var(--verify-bg); }
+  .cat-body { --c: var(--cat-body); --cbg: rgba(217,179,106,.14); }
+  .cat-road { --c: var(--cat-road); --cbg: var(--copper-bg); }
+  .cat-obd  { --c: var(--cat-obd);  --cbg: rgba(154,142,240,.16); }
+  @media (max-width: 860px) { .cat-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) {
+    .cat-grid { grid-template-columns: 1fr; }
+    .hs { width: 24px; height: 24px; }
+    .hs .pin::before { width: 24px; height: 24px; }
+    .hs .pin::after { width: 10px; height: 10px; }
+    .hs-tip { max-width: 190px; padding: 10px 12px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .hs .pin::before { animation: none; } }
 </style>
 </head>
 <body>
@@ -409,6 +495,90 @@
         <h3>Mechanic services on demand</h3>
         <p>Book a real mechanic through Plates — an inspection, a full service, or a done-for-you listing.</p>
       </div>
+    </div>
+  </div>
+</section>
+
+<section id="inspect" class="inspect reveal">
+  <span class="ghost section-ghost" aria-hidden="true">checked</span>
+  <div class="wrap" style="position:relative">
+    <div class="section-head">
+      <p class="eyebrow">What a verified inspection covers</p>
+      <h2>What we inspect.</h2>
+      <p>When a Plates listing reads “Verified,” an independent mechanic has been over the whole car — point by point. Hover a marker to see what's checked.</p>
+    </div>
+
+    <div class="inspect-stage">
+      <div class="inspect-car">
+        <!-- Vehicle photo: Unsplash (free commercial licence) — https://unsplash.com/photos/425eb53dc143 — background removed + colour-neutralised -->
+        <img src="what-is-plates-assets/inspect-car.png" alt="Side profile of a white BMW M4 coupe with ten inspection points marked across it" width="1650" height="511" loading="lazy">
+      </div>
+      <div class="hotspots" aria-label="Interactive inspection points">
+        <button type="button" class="hs mech tip-up tip-start" data-cat="mech" style="left:12.5%;top:46%" aria-label="Engine and fluids — Mechanical">
+          <span class="pin" aria-hidden="true"></span>
+          <span class="hs-tip"><span class="cat">Mechanical</span><h4>Engine &amp; fluids</h4><p>Oil and coolant condition, leaks, belts and visible wear under the bonnet.</p></span>
+        </button>
+        <button type="button" class="hs mech tip-up tip-start" data-cat="mech" style="left:18%;top:74%" aria-label="Tyres and brakes, front — Mechanical">
+          <span class="pin" aria-hidden="true"></span>
+          <span class="hs-tip"><span class="cat">Mechanical</span><h4>Tyres &amp; brakes</h4><p>Tread depth, uneven wear, brake discs and pads, and wheel-bearing play.</p></span>
+        </button>
+        <button type="button" class="hs mech tip-up tip-start" data-cat="mech" style="left:26%;top:67%" aria-label="Suspension and steering — Mechanical">
+          <span class="pin" aria-hidden="true"></span>
+          <span class="hs-tip"><span class="cat">Mechanical</span><h4>Suspension &amp; steering</h4><p>Shocks, springs, bushings, ball joints and play in the steering rack.</p></span>
+        </button>
+        <button type="button" class="hs obd tip-up" data-cat="obd" style="left:34%;top:42%" aria-label="OBD2 diagnostics — OBD2 Scan">
+          <span class="pin" aria-hidden="true"></span>
+          <span class="hs-tip"><span class="cat">OBD2 Scan</span><h4>Diagnostic port</h4><p>Stored and pending fault codes pulled from the car's computer — read and shared in full.</p></span>
+        </button>
+        <button type="button" class="hs road tip-down" data-cat="road" style="left:37.5%;top:24%" aria-label="Interior and dashboard — Road Test">
+          <span class="pin" aria-hidden="true"></span>
+          <span class="hs-tip"><span class="cat">Road Test</span><h4>Interior &amp; dash</h4><p>Warning lights, electrics, climate and seats — and odometer sanity on the test drive.</p></span>
+        </button>
+        <button type="button" class="hs body tip-up" data-cat="body" style="left:48.5%;top:50%" aria-label="Paint and panels — Body and Frame">
+          <span class="pin" aria-hidden="true"></span>
+          <span class="hs-tip"><span class="cat">Body &amp; Frame</span><h4>Paint &amp; panels</h4><p>Paint-thickness readings per panel, colour match, and repaint or filler signs.</p></span>
+        </button>
+        <button type="button" class="hs body tip-down" data-cat="body" style="left:58%;top:17%" aria-label="Glass, seals and roof — Body and Frame">
+          <span class="pin" aria-hidden="true"></span>
+          <span class="hs-tip"><span class="cat">Body &amp; Frame</span><h4>Glass, seals &amp; roof</h4><p>Chips and cracks, seal condition, sunroof, and hail or structural dents.</p></span>
+        </button>
+        <button type="button" class="hs mech tip-up" data-cat="mech" style="left:48%;top:84%" aria-label="Underbody and exhaust — Mechanical">
+          <span class="pin" aria-hidden="true"></span>
+          <span class="hs-tip"><span class="cat">Mechanical</span><h4>Underbody &amp; exhaust</h4><p>Corrosion, fluid leaks, exhaust condition and signs of impact underneath.</p></span>
+        </button>
+        <button type="button" class="hs mech tip-up" data-cat="mech" style="left:80%;top:74%" aria-label="Rear brakes and suspension — Mechanical">
+          <span class="pin" aria-hidden="true"></span>
+          <span class="hs-tip"><span class="cat">Mechanical</span><h4>Rear brakes &amp; suspension</h4><p>Rear discs, pads, tyres, shocks and bearings — the half buyers forget to check.</p></span>
+        </button>
+        <button type="button" class="hs body tip-up tip-end" data-cat="body" style="left:91%;top:47%" aria-label="Structure and accident history — Body and Frame">
+          <span class="pin" aria-hidden="true"></span>
+          <span class="hs-tip"><span class="cat">Body &amp; Frame</span><h4>Structure &amp; history</h4><p>Panel gaps, weld seams and repair signs that reveal past collision or flood damage.</p></span>
+        </button>
+      </div>
+    </div>
+    <p class="hint">Hover or tap a marker</p>
+
+    <div class="cat-grid">
+      <article class="cat-card cat-mech" data-cat="mech">
+        <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3h.1a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8v.1a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg></span>
+        <h3>Mechanical</h3>
+        <p>Engine, transmission &amp; drivetrain.</p>
+      </article>
+      <article class="cat-card cat-body" data-cat="body">
+        <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13l1.8-5a2 2 0 0 1 1.9-1.4h10.6A2 2 0 0 1 19.2 8L21 13v3.5a1 1 0 0 1-1 1h-1.5M3 13v3.5a1 1 0 0 0 1 1h1.5M3 13h18"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg></span>
+        <h3>Body &amp; Frame</h3>
+        <p>Accident, rust &amp; flood damage.</p>
+      </article>
+      <article class="cat-card cat-road" data-cat="road">
+        <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.2 17a9 9 0 1 1 15.6 0"/><path d="M12 13.5a1.6 1.6 0 1 0 0-3.2 1.6 1.6 0 0 0 0 3.2z"/><path d="M13.3 10.7L16.5 8"/></svg></span>
+        <h3>Road Test</h3>
+        <p>Real-world driving performance.</p>
+      </article>
+      <article class="cat-card cat-obd" data-cat="obd">
+        <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="10" height="10" rx="1.6"/><path d="M10 2.5v3M14 2.5v3M10 18.5v3M14 18.5v3M2.5 10h3M2.5 14h3M18.5 10h3M18.5 14h3"/></svg></span>
+        <h3>OBD2 Scan</h3>
+        <p>Fault codes read &amp; shared.</p>
+      </article>
     </div>
   </div>
 </section>
@@ -583,6 +753,35 @@
     }
   }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
   document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+
+  // What we inspect — tap/click to pin a marker open, and link the cards to their markers
+  (function () {
+    const field = document.querySelector('#inspect .hotspots');
+    if (!field) return;
+    const spots = [...field.querySelectorAll('.hs')];
+    spots.forEach((s) => {
+      s.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const open = s.classList.contains('open');
+        spots.forEach((o) => o.classList.remove('open'));
+        if (!open) s.classList.add('open');
+      });
+    });
+    document.addEventListener('click', () => spots.forEach((o) => o.classList.remove('open')));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') spots.forEach((o) => o.classList.remove('open')); });
+
+    document.querySelectorAll('#inspect .cat-card').forEach((card) => {
+      const cat = card.dataset.cat;
+      card.addEventListener('mouseenter', () => {
+        field.classList.add('linked');
+        spots.forEach((d) => d.classList.toggle('on', d.dataset.cat === cat));
+      });
+      card.addEventListener('mouseleave', () => {
+        field.classList.remove('linked');
+        spots.forEach((d) => d.classList.remove('on'));
+      });
+    });
+  })();
 </script>
 
 </body>
